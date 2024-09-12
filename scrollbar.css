@@ -1,0 +1,15 @@
+/* For the whole scrollbar */
+::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+    height: 12px; /* Height of the horizontal scrollbar */
+}
+
+/* For the part of the scrollbar that you drag */
+::-webkit-scrollbar-thumb {
+    background-color: var(--sb-thumb); /* Color of the draggable part */
+}
+
+/* For the scrollbar track piece that you don't see (inside the track) */
+::-webkit-scrollbar-track-piece {
+    border-left: 1px solid var(--sb-track);
+}

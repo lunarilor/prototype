@@ -1,0 +1,10 @@
+ :root {
+    --color: white;
+    --surface-1: black;
+    --surface-2: #111;
+    --object-3: #444;
+    --object-2: #888;
+    --object-1: #bbb;
+    --sb-thumb: #888;
+    --sb-track: white;
+}

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>LUNARILOR</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="theme.css" />
+        <link rel="stylesheet" href="scrollbar.css" />
+        <link rel="stylesheet" href="font.css" />
+        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="habits.css" />
+        <link rel="stylesheet" href="calendar.css" />
+        <style>
+            #close-menu-btn,
+            #menu-btn {
+                position: fixed;
+                top: 1em;
+                left: 1em;
+                cursor: pointer;
+                border: none;
+            }
+
+            #menu {
+                background-color: rgb(0, 0, 0, 0.5);
+                z-index: 2;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
+            #menu > div {
+                background-color: var(--surface-2);
+                border-right: 1px solid var(--object-1);
+                padding: 4em 2em;
+                padding-right: 4em;
+                min-height: 100vh;
+            }
+            #profile {
+                margin-bottom: 2em;
+            }
+            #profile img {
+                max-width: 4em;
+                border-radius: 50%;
+            }
+            #extra-nav span {
+                display: flex;
+                align-items: center;
+                gap: 1em;
+            }
+            #bottom-nav {
+                justify-content: space-evenly;
+                align-items: center;
+                position: sticky;
+                bottom: 0;
+                left: 0;
+                margin-top: 1em;
+                border-radius: 1em 1em 0 0;
+            }
+            #bottom-nav button:last-child {
+                padding: 1em;
+                transform: translateY(-25%);
+                box-shadow: 0 0 0 2px var(--object-1);
+            }
+            #bottom-nav,
+            #bottom-nav button:last-child {
+                background-color: var(--object-3);
+            }
+        </style>
+    </head>
+    <body>
+        <button class="icon" id="menu-btn">
+            <img src="svg/menu.svg" />
+        </button>
+        <div id="menu" class="flex hidden">
+            <div class="pos-rel flex-col gap-3">
+                <button id="close-menu-btn" class="radius-half">
+                    <img src="svg/close.svg" />
+                </button>
+                <div id="profile" class="flex x-between y-center gap-3">
+                    <img src="me.jpg" />
+                    <div>
+                        <span>USERNAME</span>
+                    </div>
+                </div>
+                <div id="extra-nav" class="flex-col gap-3 clickables">
+                    <span>
+                        <img src="svg/settings.svg" />
+                        settings
+                    </span>
+                    <span>
+                        <img src="svg/database.svg" />
+                        health data
+                    </span>
+                    <span>
+                        <img src="svg/toggle_on.svg" />
+                        preferences
+                    </span>
+                    <span>
+                        <img src="svg/groups.svg" />
+                        community
+                    </span>
+                    <span>
+                        <img src="svg/article.svg" />
+                        articles
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div id="calendar">
+            <div id="month">
+                <div>
+                    <button class="icon">
+                        <img src="svg/chevron_left.svg" />
+                    </button>
+                    <span id="month-name" class="flex x-center flex-grow"></span>
+                    <button class="icon">
+                        <img src="svg/chevron_right.svg" />
+                    </button>
+                </div>
+                <div id="month-calendar"></div>
+            </div>
+            <div id="cycle">
+                <span>Phase #1 ( 1 / 15.28 )</span>
+                <div id="phases" class="flex pos-rel">
+                    <span id="phase-1"></span>
+                    <span id="phase-2"></span>
+                    <span id="phase-3"></span>
+                    <span id="phase-4"></span>
+                    <span id="phase-pointer"></span>
+                </div>
+            </div>
+            <div id="symptom-selector" class="hidden">
+                <div></div>
+                <span id="name">Energy</span>
+                <div id="levels">
+                    <span>A</span>
+                    <span>B</span>
+                    <span>C</span>
+                </div>
+                <button>register</button>
+            </div>
+        </div>
+        <div id="routine">
+            <button id="plan-btn" class="icon">
+                <img src="svg/view_list.svg" />
+            </button>
+            <div id="habits"></div>
+        </div>
+        <div id="bottom-nav" class="flex">
+            <button class="icon" onclick="openCalendar()">
+                <img src="svg/calendar_month.svg" />
+            </button>
+            <button class="icon" onclick="openRoutine()">
+                <img src="svg/psychiatry.svg" />
+            </button>
+            <button class="icon">
+                <img src="svg/edit.svg" />
+            </button>
+        </div>
+        <script src="dom-functions.js"></script>
+        <script src="dom-reaction.js"></script>
+        <!-- <script src="main.js"></script> -->
+        <script>
+            const monthNames = [
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+            ];
+            const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]; // Adjust February for leap years if needed
+            const activitiesIcons = [
+                "school",
+                "esports",
+                "mindfulness",
+                "hiking",
+                "swords",
+                "architecture",
+                "trophy",
+            ];
+            const habitColors = [
+                "#FF5733", // Vivid Orange
+                "#33FF57", // Bright Green
+                "#3357FF", // Bright Blue
+                "#F1C40F", // Bright Yellow
+                "#9B59B6", // Purple
+                "#E74C3C", // Red
+                "#1ABC9C", // Turquoise
+                "#E67E22", // Carrot Orange
+                "#3498DB", // Sky Blue
+                "#2ECC71", // Emerald Green
+                "#F39C12", // Sun Flower
+                "#D35400", // Pumpkin Orange
+                "#C0392B", // Strong Red
+                "#8E44AD", // Wisteria
+                "#2980B9", // Midnight Blue
+                "#27AE60", // Nephritis Green
+            ];
+
+            fillHabits();
+            function fillHabits() {
+                let newHTML = "";
+                for (let i = 0; i < 10; i++) {
+                    const hicon =
+                        activitiesIcons[
+                            Math.floor(Math.random() * activitiesIcons.length)
+                        ];
+                    const hcolor =
+                        habitColors[
+                            Math.floor(Math.random() * habitColors.length)
+                        ];
+                    newHTML += `
+                    <div class='habit' style="border-color:${hcolor}">
+                        <div>
+                            <div class="title">
+                                <img src='svg/${hicon}.svg'>
+                                <span style="color:${hcolor}">habit #${i}</span>
+                            </div>
+                            <span class='phases'>phase 1, phase 2</span>
+                            <div>
+                                <div class='time-block'>
+                                    <img src='svg/schedule.svg'>
+                                    <span>10:00 AM - 09:00 PM</span>
+                                </div>
+                                <span class='tag'>fitness</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span>${Math.floor(Math.random() * 10)}</span>
+                            <button>
+                                <img src='svg/check.svg'>
+                            </button>
+                        </div>
+                    </div>`;
+                }
+                byid("habits").innerHTML = newHTML;
+            }
+
+            fillCalendar(1);
+            function fillCalendar(m) {
+                // / / / / / CALENDAR
+                byid("month-name").textContent = monthNames[m];
+                let newHTML = "";
+                newHTML += `
+                        <div class='week-days flex'>`;
+                for (let w = 0; w < 7; w++) {
+                    // week name
+                    newHTML += `<span>${dayNames[w]}</span>`;
+                }
+                // close week line, open days, open day line
+                newHTML += `</div>
+                        <div class="day-blocks flex-col">
+                            <div class='flex'>`;
+                for (let d = 0; d < monthDays[m]; d++) {
+                    newHTML += `<span class="day">${d + 1}</span>`;
+                    if ((d + 1) % 7 == 0) {
+                        if (d != 0) {
+                            // close day line
+                            newHTML += `</div>`;
+                            if (d + 1 != monthDays[m]) {
+                                // new line of days
+                                newHTML += `<div class='flex'>`;
+                            }
+                        }
+                    }
+                }
+                // close days, month block
+                newHTML += `</div></div>`;
+                byid("month-calendar").innerHTML = newHTML;
+            }
+        </script>
+    </body>
+</html>
