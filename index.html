@@ -4,85 +4,50 @@
         <title>LUNARILOR</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="theme.css" />
+        <!-- <link rel="stylesheet" href="theme.css" /> -->
         <link rel="stylesheet" href="scrollbar.css" />
         <link rel="stylesheet" href="font.css" />
         <link rel="stylesheet" href="style.css" />
         <link rel="stylesheet" href="habits.css" />
         <link rel="stylesheet" href="calendar.css" />
+        <link rel="stylesheet" href="bottom-nav.css" />
+        <link rel="stylesheet" href="side-bar.css" />
         <style>
-            #close-menu-btn,
-            #menu-btn {
-                position: fixed;
-                top: 1em;
-                left: 1em;
-                cursor: pointer;
-                border: none;
+            input {
+                border: 1px solid #444;
+                border-radius: 8px;
             }
-
-            #menu {
-                background-color: rgb(0, 0, 0, 0.5);
-                z-index: 2;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
+            input:focus {
+                border-color: #888;
             }
-            #menu > div {
-                background-color: var(--surface-2);
-                border-right: 1px solid var(--object-1);
-                padding: 4em 2em;
-                padding-right: 4em;
+            select {
+                background-color: transparent;
+            }
+            option {
+                background-color: black;
+            }
+            #routine,
+            #calendar {
                 min-height: 100vh;
-            }
-            #profile {
-                margin-bottom: 2em;
-            }
-            #profile img {
-                max-width: 4em;
-                border-radius: 50%;
-            }
-            #extra-nav span {
-                display: flex;
-                align-items: center;
-                gap: 1em;
-            }
-            #bottom-nav {
-                justify-content: space-evenly;
-                align-items: center;
-                position: sticky;
-                bottom: 0;
-                left: 0;
-                margin-top: 1em;
-                border-radius: 1em 1em 0 0;
-            }
-            #bottom-nav button:last-child {
-                padding: 1em;
-                transform: translateY(-25%);
-                box-shadow: 0 0 0 2px var(--object-1);
-            }
-            #bottom-nav,
-            #bottom-nav button:last-child {
-                background-color: var(--object-3);
             }
         </style>
     </head>
     <body>
-        <button class="icon" id="menu-btn">
+        <button class="icon" id="sidebar-btn">
             <img src="svg/menu.svg" />
         </button>
-        <div id="menu" class="flex hidden">
-            <div class="pos-rel flex-col gap-3">
-                <button id="close-menu-btn" class="radius-half">
+        <div id="sidebar" class="hidden">
+            <div>
+                <button id="close-sidebar-btn">
                     <img src="svg/close.svg" />
                 </button>
-                <div id="profile" class="flex x-between y-center gap-3">
+                <div id="profile">
                     <img src="me.jpg" />
                     <div>
                         <span>USERNAME</span>
                     </div>
                 </div>
-                <div id="extra-nav" class="flex-col gap-3 clickables">
+                <div id="extra-nav">
                     <span>
                         <img src="svg/settings.svg" />
                         settings
@@ -109,11 +74,12 @@
         <div id="calendar">
             <div id="month">
                 <div>
-                    <button class="icon">
+                    <button class="icon" onclick="preMonth()">
                         <img src="svg/chevron_left.svg" />
                     </button>
-                    <span id="month-name" class="flex x-center flex-grow"></span>
-                    <button class="icon">
+                    <span id="month-name"></span>
+                    <span id="year"></span>
+                    <button class="icon" onclick="nextMonth()">
                         <img src="svg/chevron_right.svg" />
                     </button>
                 </div>
@@ -121,32 +87,143 @@
             </div>
             <div id="cycle">
                 <span>Phase #1 ( 1 / 15.28 )</span>
-                <div id="phases" class="flex pos-rel">
+                <div id="phases">
                     <span id="phase-1"></span>
                     <span id="phase-2"></span>
                     <span id="phase-3"></span>
                     <span id="phase-4"></span>
-                    <span id="phase-pointer"></span>
+                    <img id="phase-pointer" src="svg/south.svg" />
                 </div>
             </div>
-            <div id="symptom-selector" class="hidden">
-                <div></div>
-                <span id="name">Energy</span>
+            <style>
+                #symptom-form {
+                    position: fixed;
+                    bottom: 6em;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    max-width: 100%;
+                    background-color: #222;
+                    border-radius: 0.5em;
+                    padding: 1em;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1em;
+                }
+                #symptom-name {
+                    font-size: 1.5em;
+                }
+                #levels {
+                    display: flex;
+                    overflow-x: auto;
+                    gap: 0.5em;
+                    padding-bottom: 1em;
+                    border-bottom: 1px solid grey;
+                }
+                #levels > span {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 0.5em;
+                }
+                #levels img {
+                    width: 8em;
+                    border: 1px solid yellow;
+                    border-radius: 0.5em;
+                }
+                #symptom-actions {
+                    display: flex;
+                    justify-content: space-between;
+                }
+                #symptom-actions button {
+                    padding: 0.5em;
+                    background-color: #444;
+                    border-radius: 8px;
+                }
+            </style>
+            <div id="symptom-form" class="hidden">
+                <span id="symptom-name">Energy</span>
                 <div id="levels">
-                    <span>A</span>
-                    <span>B</span>
-                    <span>C</span>
+                    <span>
+                        <img src="svg/bolt.svg" />
+                        <span>low</span>
+                    </span>
+                    <span>
+                        <img src="svg/bolt.svg" />
+                        <span>almost low</span>
+                    </span>
+                    <span>
+                        <img src="svg/bolt.svg" />
+                        <span>almost high</span>
+                    </span>
+                    <span>
+                        <img src="svg/bolt.svg" />
+                        <span>high</span>
+                    </span>
                 </div>
-                <button>register</button>
+                <div id="symptom-actions">
+                    <button>
+                        <img src="svg/add.svg" />
+                        Add
+                    </button>
+                    <button>
+                        <img src="svg/close.svg" />
+                    </button>
+                </div>
             </div>
         </div>
         <div id="routine">
             <button id="plan-btn" class="icon">
                 <img src="svg/view_list.svg" />
             </button>
+            <style>
+                #habit-form {
+                    position: fixed;
+                    bottom: 6em;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    max-width: 100%;
+                    background-color: #222;
+                    border-radius: 0.5em;
+                    padding: 1em;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1em;
+                }
+                #habit-name {
+                    font-size: 1.5em;
+                }
+
+                #habit-actions {
+                    display: flex;
+                    justify-content: space-between;
+                }
+                #habit-actions button {
+                    padding: 0.5em;
+                    background-color: #444;
+                    border-radius: 8px;
+                }
+            </style>
+            <div id="habit-form" class="hidden">
+                <input id="habit-name" placeholder="Habit" />
+                <img id="selected-icon">
+                <select id="icons"></select>
+                <select id="colors"></select>
+                <input id="habit-counter" placeholder="repetitions" />
+                <input id="habit-tag" placeholder="tag" />
+                <input id="habit-time" type="date" />
+                <div id="habit-actions">
+                    <button>
+                        <img src="svg/add.svg" />
+                        Add
+                    </button>
+                    <button>
+                        <img src="svg/close.svg" />
+                    </button>
+                </div>
+            </div>
             <div id="habits"></div>
         </div>
-        <div id="bottom-nav" class="flex">
+        <div id="bottom-nav">
             <button class="icon" onclick="openCalendar()">
                 <img src="svg/calendar_month.svg" />
             </button>
@@ -159,7 +236,7 @@
         </div>
         <script src="dom-functions.js"></script>
         <script src="dom-reaction.js"></script>
-        <!-- <script src="main.js"></script> -->
+        <script src="habit.js"></script>
         <script>
             const monthNames = [
                 "January",
@@ -205,10 +282,40 @@
                 "#27AE60", // Nephritis Green
             ];
 
+            if (1) {
+                let newHTML = "";
+                for (let c of habitColors){
+                    newHTML += `<option value="${c}" style="background-color:${c}">${c}</option>`;
+                }
+                byid("colors").innerHTML = newHTML;
+            }
+            if (1) {
+                let newHTML = "";
+                for (let i of activitiesIcons){
+                    newHTML += `<option value="${i}">${i}</option>`;
+                }
+                byid("icons").innerHTML = newHTML;
+                byid("icons").onchange = (event)=>{
+                    byid("selected-icon").src=`svg/${byid("icons").value}.svg`
+                };
+            }
+            const tempnames = [
+                "Exercise",
+                "Meditation",
+                "Reading",
+                "Water Intake",
+                "Healthy Eating",
+                "Sleep",
+                "Gratitude",
+                "Goal Setting",
+            ];
+
             fillHabits();
             function fillHabits() {
                 let newHTML = "";
                 for (let i = 0; i < 10; i++) {
+                    const name =
+                        tempnames[Math.floor(Math.random() * tempnames.length)];
                     const hicon =
                         activitiesIcons[
                             Math.floor(Math.random() * activitiesIcons.length)
@@ -217,61 +324,74 @@
                         habitColors[
                             Math.floor(Math.random() * habitColors.length)
                         ];
-                    newHTML += `
-                    <div class='habit' style="border-color:${hcolor}">
-                        <div>
-                            <div class="title">
-                                <img src='svg/${hicon}.svg'>
-                                <span style="color:${hcolor}">habit #${i}</span>
-                            </div>
-                            <span class='phases'>phase 1, phase 2</span>
-                            <div>
-                                <div class='time-block'>
-                                    <img src='svg/schedule.svg'>
-                                    <span>10:00 AM - 09:00 PM</span>
-                                </div>
-                                <span class='tag'>fitness</span>
-                            </div>
-                        </div>
-                        <div>
-                            <span>${Math.floor(Math.random() * 10)}</span>
-                            <button>
-                                <img src='svg/check.svg'>
-                            </button>
-                        </div>
-                    </div>`;
+                    newHTML += habitHTM(
+                        name,
+                        hcolor,
+                        hicon,
+                        ["phase 1", "phase 2"],
+                        Math.random() > 0.5
+                            ? `${Math.floor(Math.random() * 10)} AM`
+                            : "",
+                        Math.random() > 0.5
+                            ? `${Math.floor(Math.random() * 10)} PM`
+                            : "",
+                        "tag",
+                        Math.floor(Math.random() * 5)
+                    );
                 }
                 byid("habits").innerHTML = newHTML;
             }
 
-            fillCalendar(1);
+            let curMonth = 0;
+            let curYear = 2024;
+            fillCalendar(0);
+            function preMonth() {
+                curMonth += 11;
+                curMonth %= 12;
+                if (curMonth == 11) curYear--;
+                fillCalendar(curMonth);
+            }
+            function nextMonth() {
+                curMonth++;
+                curMonth %= 12;
+                if (curMonth == 0) curYear++;
+                fillCalendar(curMonth);
+            }
             function fillCalendar(m) {
                 // / / / / / CALENDAR
                 byid("month-name").textContent = monthNames[m];
+                byid("year").textContent = curYear;
+
                 let newHTML = "";
-                newHTML += `
-                        <div class='week-days flex'>`;
+                newHTML += `<div class='week-days'>`;
                 for (let w = 0; w < 7; w++) {
                     // week name
                     newHTML += `<span>${dayNames[w]}</span>`;
                 }
                 // close week line, open days, open day line
-                newHTML += `</div>
-                        <div class="day-blocks flex-col">
-                            <div class='flex'>`;
+                newHTML += `</div><div class="day-blocks"><div>`;
                 for (let d = 0; d < monthDays[m]; d++) {
                     newHTML += `<span class="day">${d + 1}</span>`;
                     if ((d + 1) % 7 == 0) {
                         if (d != 0) {
                             // close day line
-                            newHTML += `</div>`;
-                            if (d + 1 != monthDays[m]) {
-                                // new line of days
-                                newHTML += `<div class='flex'>`;
-                            }
+                            newHTML += `</div><div>`;
                         }
                     }
                 }
+                for (let d = monthDays[m]; d < 35; d++) {
+                    newHTML += `<span class="day off">${
+                        d + 1 - monthDays[m]
+                    }</span>`;
+                    if ((d + 1) % 7 == 0) {
+                        if (d != 0) {
+                            // close day line
+                            newHTML += `</div>`;
+                            if (d + 1 < 35) newHTML += "<div>";
+                        }
+                    }
+                }
+
                 // close days, month block
                 newHTML += `</div></div>`;
                 byid("month-calendar").innerHTML = newHTML;

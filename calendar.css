@@ -1,38 +1,51 @@
+#calendar {
+    padding: 1em 0.5em;
+}
 #month {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 90vh;
     max-width: fit-content;
     margin: 0 auto;
     align-items: center;
 }
 #month > div:first-child {
     display: flex;
+    justify-content: space-between;
     width: 100%;
+    margin-bottom: 1em;
 }
 #month button {
     border: none;
-    background-color: var(--object-3);
+    background-color: #222;
 }
 
+.day-blocks{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
 .day-blocks,
 .day-blocks > div {
+    display: flex;
     gap: 0.5em;
 }
 .day-blocks span {
-    min-width: 1.5em;
     text-align: center;
+    width: 2em;
     background-color: #111;
-    border-radius: 8px;
+    border-radius: 0.5em;
     padding: 0.5em;
 }
+.day-blocks .off {
+    opacity: 0.5;
+}
 .week-days {
-    gap: 1.5em;
-    padding: 0 0.25em;
+    display: flex;
+    gap: 0.5em;
 }
 .week-days span {
-    width: 1.5rem;
+    width: 2rem;
     text-align: center;
     font-size: 14px;
 }
@@ -49,8 +62,12 @@
     flex-direction: column;
     gap: 0.5em;
 }
-
-#phases span {
+#phases {
+    position: relative;
+    display: flex;
+}
+#phases span:not(:last-child) {
+    display: flex;
     height: 1em;
 }
 #phase-1 {
@@ -77,13 +94,35 @@
 }
 #phase-pointer {
     position: absolute;
-    left: 3em;
-    width: 1em;
-    background-color: white;
+    top: 0%;
+    left: 10%;
     animation: point 2s infinite;
+    rotate: 180deg;
 }
+
 @keyframes point {
     50% {
-        rotate: 180deg;
+        transform: translateY(-1em);
     }
+}
+
+
+
+
+.day-blocks .today,
+.day-blocks div:first-child span:nth-child(5) {
+    background-color: white;
+    color: black;
+}
+.day-blocks div:first-child span {
+    background-color: purple;
+}
+.day-blocks div:nth-child(2) span {
+    background-color: red;
+}
+.day-blocks div:nth-child(3) span {
+    background-color: orange;
+}
+.day-blocks div span {
+    background-color: orangered;
 }

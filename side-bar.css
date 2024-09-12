@@ -1,0 +1,71 @@
+#sidebar-btn {
+    position: fixed;
+    left: 1em;
+    background-color: black;
+    box-shadow: 0 0 0 8px black;
+}
+
+#close-sidebar-btn,
+#sidebar-btn {
+    top: 1em;
+    cursor: pointer;
+    border: 1px solid #444;
+    border-radius: 4px;
+}
+#close-sidebar-btn {
+    position: absolute;
+    right: 1em;
+}
+
+#close-sidebar-btn:hover,
+#sidebar-btn:hover {
+    background-color: #444;
+}
+
+#sidebar {
+    background-color: rgb(0, 0, 0, 0.5);
+    z-index: 2;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+#sidebar > div {
+    background-color: #222;
+    border-right: 1px solid #444;
+    border-radius: 0 1em 1em 0;
+    padding: 4em 2em;
+    padding-right: 4em;
+    min-height: 100vh;
+    width: fit-content;
+    position: relative;
+}
+#profile {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+    border-bottom: 1px solid #444;
+}
+#profile img {
+    width: 4em;
+    max-width: 4em;
+    border-radius: 50%;
+}
+#extra-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+#extra-nav span {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: 0.25em 1em;
+    border-radius: 1em;
+    cursor: pointer;
+}
+#extra-nav span:hover {
+    background-color: #444;
+}

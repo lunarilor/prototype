@@ -56,7 +56,13 @@ function toggleVisibilityByBtn(btn, elm) {
         elm.classList.toggle("hidden");
     });
 }
-function toggleVisOfWindowByBtn(btn, elm) {
+function toggleSidebar(btn, elm) {
+    elm.addEventListener("click", (event) => {
+        if (btn.id == "sidebar-btn") return
+        if (!bycss("#sidebar > div").contains(event.target)) {
+            btn.click();
+        }
+    });
     btn.addEventListener("click", () => {
         elm.classList.toggle("hidden");
         document.body.style.overflowY = elm.classList.contains("hidden")
